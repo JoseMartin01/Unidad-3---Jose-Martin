@@ -1,0 +1,5 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'Producer', 'x':10, 'y':10, 'width':90, 'height':80, 'attrs': '', 'meths': 'meet|produce'}
+{'type':'umlshape', 'id':'Proxy', 'x':514, 'y':353, 'width':74, 'height':122, 'attrs': 'occupied|producer', 'meths': '__init__|produce'}
+{'type':'edge', 'id':'Producer_to_Proxy', 'source':'Producer', 'target':'Proxy', 'uml_edge_type': 'composition'}
