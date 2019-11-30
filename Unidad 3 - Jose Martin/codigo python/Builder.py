@@ -1,48 +1,161 @@
-# builder.py
+from __future__ import annotations
+from abc import ABC, abstractmethod, abstractproperty
+from typing import Any
+
+
+class Builder(ABC):
+    """
+    The Builder interface specifies methods for creating the different parts of
+    the Product objects.
+    """
+
+    @abstractproperty
+    def house(self) -> None:
+        pass
+
+    @abstractmethod
+    def produce_part_1(self) -> None:
+        pass
+
+    @abstractmethod
+    def produce_part_2(self) -> None:
+        pass
+
+    @abstractmethod
+    def produce_part_3(self) -> None:
+        pass
+
+
+class ConcreteBuilder(Builder):
+    """
+    The Concrete Builder classes follow the Builder interface and provide
+    specific implementations of the building steps. Your program may have
+    several variations of Builders, implemented differently.
+    """
+
+    def __init__(self) -> None:
+        """
+        A fresh builder instance should contain a blank product object, which is
+        used in further assembly.
+        """
+        self.reset()
+
+    def reset(self) -> None:
+        self._house = House()
+
+    @property
+    def house(self) -> House:
+        """
+        Concrete Builders are supposed to provide their own methods for
+        retrieving results. That's because various types of builders may create
+        entirely different products that don't follow the same interface.
+        Therefore, such methods cannot be declared in the base Builder interface
+        (at least in a statically typed programming language).
+
+        Usually, after returning the end result to the client, a builder
+        instance is expected to be ready to start producing another product.
+        That's why it's a usual practice to call the reset method at the end of
+        the `getProduct` method body. However, this behavior is not mandatory,
+        and you can make your builders wait for an explicit reset call from the
+        client code before disposing of the previous result.
+        """
+        house = self._house
+        self.reset()
+        return house
+
+    def produce_part_1(self) -> None:
+        self._house.add("Part1")
+
+    def produce_part_2(self) -> None:
+        self._house.add("Part2")
+
+    def produce_part_3(self) -> None:
+        self._house.add("Part3")
+
+
+class House():
+    """
+    It makes sense to use the Builder pattern only when your products are quite
+    complex and require extensive configuration.
+
+    Unlike in other creational patterns, different concrete builders can produce
+    unrelated products. In other words, results of various builders may not
+    always follow the same interface.
+    """
+
+    def __init__(self) -> None:
+        self.parts = []
+
+    def add(self, part: Any) -> None:
+        self.parts.append(part)
+
+    def list_parts(self) -> None:
+        print(f"Product parts: {', '.join(self.parts)}", end="")
+
 
 class Director:
-    def __init__(self, builder):
+    """
+    The Director is only responsible for executing the building steps in a
+    particular sequence. It is helpful when producing products according to a
+    specific order or configuration. Strictly speaking, the Director class is
+    optional, since the client can control builders directly.
+    """
+
+    def __init__(self) -> None:
+        self._builder = None
+
+    @property
+    def builder(self) -> Builder:
+        return self._builder
+
+    @builder.setter
+    def builder(self, builder: Builder) -> None:
+        """
+        The Director works with any builder instance that the client code passes
+        to it. This way, the client code may alter the final type of the newly
+        assembled product.
+        """
         self._builder = builder
 
-    def construct_car(self):
-        self._builder.create_new_car()
-        self._builder.add_model()
-        self._builder.add_tires()
-        self._builder.add_engine()
+    """
+    The Director can construct several product variations using the same
+    building steps.
+    """
 
-    def get_car(self):
-        return self._builder.car
+    def build_minimal_viable_house(self) -> None:
+        self.builder.produce_part_1()
 
-class Builder:
-    """ Abstract Builder """
-    def __init__(self):
-        self.car = None
-    def create_new_car(self):
-        self.car = Car()
+    def build_full_featured_house(self) -> None:
+        self.builder.produce_part_1()
+        self.builder.produce_part_2()
+        self.builder.produce_part_3()
 
-class Car:
-    """ Product """
-    def __init__(self):
-        self.model = None
-        self.tires = None
-        self.engine = None
 
-    def __str__(self):
-        return "{} | {} | {}".format(self.model, self.tires, self.engine)
+if __name__ == "__main__":
+    """
+    The client code creates a builder object, passes it to the director and then
+    initiates the construction process. The end result is retrieved from the
+    builder object.
+    """
 
-class SkyLarkBuilder(Builder):
-    """ Concrete Builder ---> Provides parts and tools to work on the parts """
-    def add_model(self):
-        self.car.model = "Skylark"
-    def add_tires(self):
-        self.car.tires = "Regular tires"
-    def add_engine(self):
-        self.car.engine = "Turbo engine"
+    director = Director()
+    builder = ConcreteBuilder()
+    director.builder = builder
 
-builder = SkyLarkBuilder()
-director = Director(builder)
-director.construct_car()
-car = director.get_car()
-print(car)
+    print("Standard basic product: ")
+    director.build_minimal_viable_house()
+    builder.house.list_parts()
 
-        
+    print("\n")
+
+    print("Standard full featured house: ")
+    director.build_full_featured_house()
+    builder.house.list_parts()
+
+    print("\n")
+
+    # Remember, the Builder pattern can be used without a Director class.
+    print("Custom house: ")
+    builder.produce_part_1()
+    builder.produce_part_2()
+    builder.house.list_parts()

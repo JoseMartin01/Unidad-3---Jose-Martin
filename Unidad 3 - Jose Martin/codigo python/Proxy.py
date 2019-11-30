@@ -1,47 +1,55 @@
-# proxy.py
+"""
+*TL;DR
+Provides an interface to resource that is expensive to duplicate.
+"""
 
 import time
 
-class Producer:
-	"""Define the 'resource-intensive' object to instantiate!"""
-	def produce(self):
-		print("Producer is working hard!")
 
-	def meet(self):
-		print("Producer has time to meet you now!")
+class SalesManager:
+    def talk(self):
+        print("Sales Manager ready to talk")
+
 
 class Proxy:
-	""""Define the 'relatively less resource-intensive' proxy to instantiate as a middleman"""
-	def __init__(self):  
-		self.occupied = 'No'
-		self.producer = None
+    def __init__(self):
+        self.busy = 'No'
+        self.sales = None
 
-	def produce(self):
-		"""Check if Producer is available"""
-		print("Artist checking if Producer is available ...")
+    def talk(self):
+        print("Proxy checking for Sales Manager availability")
+        if self.busy == 'No':
+            self.sales = SalesManager()
+            time.sleep(0.1)
+            self.sales.talk()
+        else:
+            time.sleep(0.1)
+            print("Sales Manager is busy")
 
-		if self.occupied == 'No':
-			#If the producer is available, create a producer object!
-			self.producer = Producer()
-			time.sleep(2)
 
-			#Make the prodcuer meet the guest!
-			self.producer.meet()
-			
-		else:
-			#Otherwise, don't instantiate a producer 
-			time.sleep(2)
-			print("Producer is busy!")
+class NoTalkProxy(Proxy):
+    def talk(self):
+        print("Proxy checking for Sales Manager availability")
+        time.sleep(0.1)
+        print("This Sales Manager will not talk to you", "whether he/she is busy or not")
 
-#Instantiate a Proxy
-p = Proxy()
 
-#Make the proxy: Artist produce until Producer is available
-p.produce()
+if __name__ == '__main__':
+    p = Proxy()
+    p.talk()
+    p.busy = 'Yes'
+    p.talk()
+    p = NoTalkProxy()
+    p.talk()
+    p.busy = 'Yes'
+    p.talk()
 
-#Change the state to 'occupied'
-p.occupied = 'Yes'
-
-#Make the Producer produce
-p.produce()
-
+### OUTPUT ###
+# Proxy checking for Sales Manager availability
+# Sales Manager ready to talk
+# Proxy checking for Sales Manager availability
+# Sales Manager is busy
+# Proxy checking for Sales Manager availability
+# This Sales Manager will not talk to you whether he/she is busy or not
+# Proxy checking for Sales Manager availability
+# This Sales Manager will not talk to you whether he/she is busy or not

@@ -1,5 +1,9 @@
 # PynSource Version 1.2
 {'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
-{'type':'umlshape', 'id':'Producer', 'x':10, 'y':10, 'width':90, 'height':80, 'attrs': '', 'meths': 'meet|produce'}
-{'type':'umlshape', 'id':'Proxy', 'x':514, 'y':353, 'width':74, 'height':122, 'attrs': 'occupied|producer', 'meths': '__init__|produce'}
-{'type':'edge', 'id':'Producer_to_Proxy', 'source':'Producer', 'target':'Proxy', 'uml_edge_type': 'composition'}
+{'type':'umlshape', 'id':'Subject', 'x':241, 'y':220, 'width':80, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'RealSubject', 'x':208, 'y':10, 'width':120, 'height':64, 'attrs': '', 'meths': 'request'}
+{'type':'umlshape', 'id':'Proxy', 'x':10, 'y':352, 'width':114, 'height':138, 'attrs': '_real_subject', 'meths': 'request|log_access|check_access|__init__'}
+{'type':'umlshape', 'id':'ABC', 'x':514, 'y':302, 'width':40, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'Subject_to_ABC', 'source':'Subject', 'target':'ABC', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Proxy_to_Subject', 'source':'Proxy', 'target':'Subject', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'RealSubject_to_Subject', 'source':'RealSubject', 'target':'Subject', 'uml_edge_type': 'generalisation'}

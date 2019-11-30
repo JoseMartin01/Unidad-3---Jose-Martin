@@ -1,27 +1,69 @@
-# singleton.py
-class Borg:
-    """ Borg pattern making the class attributes global """
-    _shared_data = {} # Attribute dictionary
+import abc
+
+#==============================================================================
+class Singleton(object):
+    """ A generic base class to derive any singleton class from. """
+    __metaclass__ = abc.ABCMeta
+    __instance = None
+
+    def __new__(new_singleton, *arguments, **keyword_arguments):
+        """Override the __new__ method so that it is a singleton."""
+        if new_singleton.__instance is None:
+            new_singleton.__instance = object.__new__(new_singleton)
+            new_singleton.__instance.init(*arguments, **keyword_arguments)
+        return new_singleton.__instance
+
+    @abc.abstractmethod
+    def init(self, *arguments, **keyword_arguments):
+        """ 
+        as __init__ will be called on every new instance of a base class of 
+        Singleton we need a function for initialisation. This will only be 
+        called once regardless of how many instances of Singleton are made.
+        """
+        raise
+
+#==============================================================================
+class GlobalState(Singleton):
+
+    def init(self):
+        self.value = 0
+        print("init() called once")
+        print("")
+
     def __init__(self):
-        self.__dict__ = self._shared_data # Make it an attribute dictionary
+        print("__init__() always called")
+        print("")
 
-class Singleton(Borg): # Inherits from the Borg class
-    """ This class now shares all its attributes among its various instances """
-    # This essenstially makes th singleton objects an object-oriented global variable
-    def __init__(self, **kwargs):
-        Borg.__init__(self)
-        self._shared_data.update(kwargs) # Update the attribute dictionary by inserting a new kay-value pair
-
-    def __str__(self):
-        return str(self._shared_data) # Return the attribute dictionary for printing
-
-# Let's create a singleton object and add our firts acronym
-x = Singleton(HTTP="Hyper Text Transfer Protocol")
-print(x)
-
-y = Singleton(SNMP = "Simple Network Management Protocol")
-print(y)
-
-z = Singleton(SMTP = "Simple Mail Transfer Protocol")
-print(z)
+class DerivedGlobalState(GlobalState):
     
+    def __init__(self):
+        print("derived made")
+        super(DerivedGlobalState, self).__init__()
+
+    def thing(self):
+        print(self.value)
+
+#==============================================================================
+if (__name__ == "__main__"):
+    d = DerivedGlobalState()
+    print(type(d))
+    d.thing()
+    d.value = -20
+    e = DerivedGlobalState()
+    e.thing()
+    f = DerivedGlobalState()
+    f.thing()
+    
+    a = GlobalState()
+    # value is default, 0
+    print("Expecting 0, value = %i" %(a.value))
+    print("")
+
+    # set the value to 5
+    a.value = 5
+
+    # make a new object, the value will still be 5
+    b = GlobalState()
+    print("Expecting 5, value = %i" %(b.value))
+    print("")
+    print("Is a == b? " + str(a == b))
